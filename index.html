@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión de Investigación - EEA Illpa Puno</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-area">
+                <img src="logo-inia-2026-final.png" alt="INIA" class="logo-inia">
+                <div class="logo-texto">
+                    <h1>Sistema de Gestión de Investigación</h1>
+                    <p>EEA Illpa - Puno 2026</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn-header" onclick="exportarDatos()" title="Exportar datos">📤 Exportar</button>
+                <button class="btn-header" onclick="abrirModalProyecto()" title="Nuevo proyecto">➕ Nuevo Proyecto</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- TABS DE NAVEGACIÓN -->
+    <nav class="tabs-nav">
+        <button class="tab-btn activo" onclick="cambiarTab('dashboard')">📊 Dashboard</button>
+        <button class="tab-btn" onclick="cambiarTab('proyectos')">📁 Proyectos</button>
+        <button class="tab-btn" onclick="cambiarTab('hitos')">📅 Hitos</button>
+        <button class="tab-btn" onclick="cambiarTab('tareas')">✅ Tareas</button>
+        <button class="tab-btn" onclick="cambiarTab('reportes')">📈 Reportes</button>
+    </nav>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+        
+        <!-- DASHBOARD -->
+        <section id="tab-dashboard" class="tab-content activo">
+            <h2 class="section-title">📊 Panel de Control</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📁</div>
+                    <div class="stat-value" id="stat-proyectos">0</div>
+                    <div class="stat-label">Proyectos Activos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-value" id="stat-hitos">0</div>
+                    <div class="stat-label">Hitos Registrados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-value" id="stat-tareas">0</div>
+                    <div class="stat-label">Tareas Activas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📎</div>
+                    <div class="stat-value" id="stat-evidencias">0</div>
+                    <div class="stat-label">Evidencias Subidas</div>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">🎯 Progreso General por Proyecto</h3>
+            <div id="progreso-proyectos" class="progreso-lista"></div>
+        </section>
+
+        <!-- PROYECTOS -->
+        <section id="tab-proyectos" class="tab-content">
+            <div class="section-header">
+                <h2 class="section-title">📁 Proyectos de Investigación</h2>
+                <button class="btn-primary" onclick="abrirModalProyecto()">➕ Nuevo Proyecto</button>
+            </div>
+            <div id="lista-proyectos" class="cards-grid"></div>
+        </section>
+
+        <!-- HITOS -->
+        <section id="tab-hitos" class="tab-content">
+            <div class="section-header">
+                <h2 class="section-title">📅 Hitos Anuales</h2>
+                <button class="btn-primary" onclick="abrirModalHito()">➕ Nuevo Hito</button>
+            </div>
+            <div class="filtros">
+                <select id="filtro-proyecto-hito" onchange="renderizarHitos()">
+                    <option value="">Todos los proyectos</option>
+                </select>
+                <select id="filtro-estado-hito" onchange="renderizarHitos()">
+                    <option value="">Todos los estados</option>
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="En Progreso">En Progreso</option>
+                    <option value="Completado">Completado</option>
+                    <option value="Retrasado">Retrasado</option>
+                </select>
+            </div>
+            <div id="lista-hitos" class="cards-grid"></div>
+        </section>
+
+        <!-- TAREAS -->
+        <section id="tab-tareas" class="tab-content">
+            <div class="section-header">
+                <h2 class="section-title">✅ Tareas y Acciones</h2>
+                <button class="btn-primary" onclick="abrirModalTarea()">➕ Nueva Tarea</button>
+            </div>
+            <div class="filtros">
+                <select id="filtro-hito-tarea" onchange="renderizarTareas()">
+                    <option value="">Todos los hitos</option>
+                </select>
+                <select id="filtro-estado-tarea" onchange="renderizarTareas()">
+                    <option value="">Todos los estados</option>
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="En Progreso">En Progreso</option>
+                    <option value="Completado">Completado</option>
+                </select>
+            </div>
+            <div id="lista-tareas" class="tasks-container"></div>
+        </section>
+
+        <!-- REPORTES -->
+        <section id="tab-reportes" class="tab-content">
+            <h2 class="section-title">📈 Reportes y Seguimiento</h2>
+            <div class="reportes-grid">
+                <div class="reporte-card" onclick="generarReporte('proyectos')">
+                    <div class="reporte-icon">📁</div>
+                    <h3>Reporte de Proyectos</h3>
+                    <p>Estado general y avance de todos los proyectos</p>
+                </div>
+                <div class="reporte-card" onclick="generarReporte('hitos')">
+                    <div class="reporte-icon">📅</div>
+                    <h3>Reporte de Hitos</h3>
+                    <p>Cumplimiento de metas anuales</p>
+                </div>
+                <div class="reporte-card" onclick="generarReporte('tareas')">
+                    <div class="reporte-icon">✅</div>
+                    <h3>Reporte de Tareas</h3>
+                    <p>Seguimiento detallado de tareas y acciones</p>
+                </div>
+                <div class="reporte-card" onclick="generarReporte('evidencias')">
+                    <div class="reporte-icon">📎</div>
+                    <h3>Reporte de Evidencias</h3>
+                    <p>Listado de evidencias subidas por período</p>
+                </div>
+            </div>
+            <div id="reporte-contenido" class="reporte-contenido"></div>
+        </section>
+
+    </main>
+
+    <!-- MODAL: PROYECTO -->
+    <div id="modal-proyecto" class="modal oculto">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-proyecto-titulo">Nuevo Proyecto</h3>
+                <button class="modal-close" onclick="cerrarModal('modal-proyecto')">✕</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="proyecto-id">
+                <div class="form-group">
+                    <label>Título del Proyecto *</label>
+                    <input type="text" id="proyecto-titulo" placeholder="Ej: Mejoramiento Genético de Papa">
+                </div>
+                <div class="form-group">
+                    <label>Investigador Principal *</label>
+                    <input type="text" id="proyecto-investigador" placeholder="Nombre del investigador">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Año de Inicio</label>
+                        <input type="number" id="proyecto-anio-inicio" min="2020" max="2100" value="2026">
+                    </div>
+                    <div class="form-group">
+                        <label>Año de Fin</label>
+                        <input type="number" id="proyecto-anio-fin" min="2020" max="2100" value="2027">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="proyecto-descripcion" rows="3" placeholder="Objetivo general del proyecto"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Estado</label>
+                    <select id="proyecto-estado">
+                        <option value="Activo">Activo</option>
+                        <option value="En Pausa">En Pausa</option>
+                        <option value="Completado">Completado</option>
+                        <option value="Cancelado">Cancelado</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="cerrarModal('modal-proyecto')">Cancelar</button>
+                <button class="btn-primary" onclick="guardarProyecto()">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: HITO -->
+    <div id="modal-hito" class="modal oculto">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-hito-titulo">Nuevo Hito</h3>
+                <button class="modal-close" onclick="cerrarModal('modal-hito')">✕</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="hito-id">
+                <div class="form-group">
+                    <label>Proyecto *</label>
+                    <select id="hito-proyecto"></select>
+                </div>
+                <div class="form-group">
+                    <label>Título del Hito *</label>
+                    <input type="text" id="hito-titulo" placeholder="Ej: Selección de variedades promisorias">
+                </div>
+                <div class="form-group">
+                    <label>Meta Anual *</label>
+                    <input type="text" id="hito-meta" placeholder="Ej: Registrar 1 nueva variedad">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Año</label>
+                        <input type="number" id="hito-anio" min="2020" max="2100" value="2026">
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha Límite</label>
+                        <input type="date" id="hito-fecha-limite">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Estado</label>
+                    <select id="hito-estado">
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="En Progreso">En Progreso</option>
+                        <option value="Completado">Completado</option>
+                        <option value="Retrasado">Retrasado</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="hito-descripcion" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="cerrarModal('modal-hito')">Cancelar</button>
+                <button class="btn-primary" onclick="guardarHito()">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: TAREA -->
+    <div id="modal-tarea" class="modal oculto">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-tarea-titulo">Nueva Tarea</h3>
+                <button class="modal-close" onclick="cerrarModal('modal-tarea')">✕</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="tarea-id">
+                <div class="form-group">
+                    <label>Hito *</label>
+                    <select id="tarea-hito"></select>
+                </div>
+                <div class="form-group">
+                    <label>Título de la Tarea *</label>
+                    <input type="text" id="tarea-titulo" placeholder="Ej: Evaluación de rendimiento en campo">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Responsable</label>
+                        <input type="text" id="tarea-responsable" placeholder="Nombre">
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha Límite</label>
+                        <input type="date" id="tarea-fecha-limite">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Estado</label>
+                    <select id="tarea-estado">
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="En Progreso">En Progreso</option>
+                        <option value="Completado">Completado</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="tarea-descripcion" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="cerrarModal('modal-tarea')">Cancelar</button>
+                <button class="btn-primary" onclick="guardarTarea()">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ACCIÓN -->
+    <div id="modal-accion" class="modal oculto">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-accion-titulo">Nueva Acción</h3>
+                <button class="modal-close" onclick="cerrarModal('modal-accion')">✕</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="accion-id">
+                <input type="hidden" id="accion-tarea-id">
+                <div class="form-group">
+                    <label>Descripción de la Acción *</label>
+                    <input type="text" id="accion-descripcion" placeholder="Ej: Sembrar 3 parcelas experimentales">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Responsable</label>
+                        <input type="text" id="accion-responsable">
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha</label>
+                        <input type="date" id="accion-fecha">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Estado</label>
+                    <select id="accion-estado">
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="En Progreso">En Progreso</option>
+                        <option value="Completado">Completado</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>📎 Link de Evidencia (Google Drive)</label>
+                    <input type="url" id="accion-evidencia" placeholder="https://drive.google.com/... (opcional)">
+                    <small style="color:#718096; font-size:0.8em;">Por ahora pega el link manualmente. Después se conectará automáticamente.</small>
+                </div>
+                <div class="form-group">
+                    <label>Notas adicionales</label>
+                    <textarea id="accion-notas" rows="2"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="cerrarModal('modal-accion')">Cancelar</button>
+                <button class="btn-primary" onclick="guardarAccion()">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: DETALLE DE TAREA -->
+    <div id="modal-detalle-tarea" class="modal oculto">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3 id="detalle-tarea-titulo">Detalle de Tarea</h3>
+                <button class="modal-close" onclick="cerrarModal('modal-detalle-tarea')">✕</button>
+            </div>
+            <div class="modal-body" id="detalle-tarea-body">
+                <!-- Contenido dinámico -->
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
